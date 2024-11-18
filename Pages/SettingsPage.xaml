@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:SimpleImmichFrame.Controls"
+             xmlns:pageModels="clr-namespace:SimpleImmichFrame.PageModels"
+             xmlns:models="clr-namespace:SimpleImmichFrame.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="SimpleImmichFrame.Pages.SettingsPage"
+             x:DataType="pageModels:SettingsViewModel"
+             Title="Settings">
+
+  <ContentPage.Behaviors>
+    <toolkit:EventToCommandBehavior
+                EventName="Appearing"                
+                Command="{Binding AppearingCommand}" />
+  </ContentPage.Behaviors>
+
+
+  <ScrollView>
+    <VerticalStackLayout 
+            BindableLayout.ItemsSource="{Binding SettingsGroups}" 
+            Margin="{StaticResource LayoutPadding}"
+            Spacing="{StaticResource LayoutSpacing}">
+      <BindableLayout.ItemTemplate>
+        <DataTemplate x:DataType="pageModels:SettingsGroup">
+          <VerticalStackLayout Spacing="10">
+            <Label 
+                                Text="{Binding Name}"
+                                FontSize="Large"
+                                FontAttributes="Bold"
+                                Margin="0,10,0,0"/>
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Settings}" Spacing="10">
+              <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="pageModels:SettingItem">
+                  <controls:DynamicSettingControl Setting="{Binding}"/>
+                </DataTemplate>
+              </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+          </VerticalStackLayout>
+        </DataTemplate>
+      </BindableLayout.ItemTemplate>
+    </VerticalStackLayout>
+  </ScrollView>
+
+</ContentPage>
