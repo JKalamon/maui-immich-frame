@@ -7,34 +7,66 @@
              xmlns:behaviors="clr-namespace:SimpleImmichFrame.Behaviors"
              x:DataType="pageModels:PhotoPageModel"
              NavigationPage.HasNavigationBar="false"
+             Background="#000"
              Title="PhotoPage">
 
   <ContentPage.Behaviors>
+    <toolkit:StatusBarBehavior StatusBarColor="Transparent" StatusBarStyle="DarkContent" />
     <toolkit:EventToCommandBehavior
-                EventName="Appearing"                
+                EventName="Appearing"
                 Command="{Binding AppearingCommand}" />
   </ContentPage.Behaviors>
 
+  <ContentPage.Resources>
+    <ResourceDictionary>
+      <toolkit:IsNullConverter x:Key="IsNullConverter" />
+      <toolkit:IsNotNullConverter x:Key="IsNotNullConverter" />
+    </ResourceDictionary>
+  </ContentPage.Resources>
+
   <Grid VerticalOptions="Fill">
-    <Grid.GestureRecognizers>
-      <TapGestureRecognizer 
-            NumberOfTapsRequired="3"
-            Command="{Binding GoToSettingsCommand}"/>
-    </Grid.GestureRecognizers>
-    <!-- Background blurred image -->
-    <Image Source="{Binding CurrentPhoto.ImageSource}"
+
+    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding ExceptionText, Converter={StaticResource IsNotNullConverter}}">
+      <Label 
+           Text="There was an error while downloading photos"
+           HorizontalTextAlignment="Center"
+           FontFamily="OpenSans-Regular"
+           TextColor="White"
+           FontSize="25"/>
+      <Label 
+       Text="{Binding ExceptionText}"
+       FontFamily="OpenSans-Regular"
+       TextColor="White"
+       FontSize="20"/>
+
+      <Button Text="Open settings" HeightRequest="50" Command="{Binding GoToSettingsCommand}" />
+    </VerticalStackLayout>
+
+    <Image Source="{Binding CurrentPhoto.ImageSource}" IsVisible="{Binding ExceptionText, Converter={StaticResource IsNullConverter}}"
                Aspect="AspectFill"
-           
                Opacity="0.8">
       <Image.Behaviors>
-        <behaviors:BlurBehavior BlurAmount="20"/>
+        <toolkit:AnimationBehavior>
+          <toolkit:AnimationBehavior.AnimationType>
+            <toolkit:FadeAnimation 
+              Easing="{x:Static Easing.CubicOut}"/>
+          </toolkit:AnimationBehavior.AnimationType>
+        </toolkit:AnimationBehavior>
       </Image.Behaviors>
     </Image>
-    <Image Source="{Binding CurrentPhoto.ImageSource}" VerticalOptions="FillAndExpand" HorizontalOptions="Center" Aspect="AspectFit" >
+    <Image Source="{Binding CurrentPhoto.ImageSource}" VerticalOptions="FillAndExpand" HorizontalOptions="Center" Aspect="AspectFit" IsVisible="{Binding ExceptionText, Converter={StaticResource IsNullConverter}}">
       <Image.GestureRecognizers>
         <TapGestureRecognizer Command="{Binding NextPhotoCommand}"/>
         <SwipeGestureRecognizer Direction="Up" Command="{Binding GoToSettingsCommand}"/>
       </Image.GestureRecognizers>
+      <Image.Behaviors>
+        <toolkit:AnimationBehavior>
+          <toolkit:AnimationBehavior.AnimationType>
+            <toolkit:FadeAnimation 
+                    Easing="{x:Static Easing.CubicOut}"/>
+          </toolkit:AnimationBehavior.AnimationType>
+        </toolkit:AnimationBehavior>
+      </Image.Behaviors>
     </Image>
 
 
@@ -46,7 +78,7 @@
                Margin="100,0,0,125"
                TextColor="White"
                FontSize="55"/>
-    
+
     <Label 
                Text="{Binding CurrentPhoto.CreatedDate}"
                HorizontalOptions="Start"
@@ -55,6 +87,58 @@
                Margin="100,0,0,100"
                TextColor="White"
                FontSize="25"/>
-    
+
+    <VerticalStackLayout HorizontalOptions="End" VerticalOptions="End" Margin="0,0,100,100" IsVisible="{Binding CurrentPhoto, Converter={StaticResource IsNotNullConverter}}">
+      <HorizontalStackLayout IsVisible="{Binding CurrentPhoto.DisplayAperture}">
+        <Image Source="aperture.png" HeightRequest="20" Margin="0,0,10,0"/>
+        <Label FontFamily="OpenSans-Regular">
+          <Label.FormattedText>
+            <FormattedString>
+              <Span TextColor="White" FontSize="18" Text="f/"/>
+              <Span TextColor="White" FontSize="18" Text="{Binding CurrentPhoto.Aperture}"/>
+            </FormattedString>
+          </Label.FormattedText>
+        </Label>
+      </HorizontalStackLayout>
+
+      <HorizontalStackLayout IsVisible="{Binding CurrentPhoto.DisplayIso}">
+        <Image Source="iso.png" HeightRequest="20" Margin="0,0,10,0"/>
+        <Label 
+         Text="{Binding CurrentPhoto.Iso}"
+         FontFamily="OpenSans-Regular"
+         TextColor="White"
+         FontSize="18"/>
+      </HorizontalStackLayout>
+
+      <HorizontalStackLayout IsVisible="{Binding CurrentPhoto.DisplayFocalLength}">
+        <Image Source="eye.png" HeightRequest="20" Margin="0,0,10,0"/>
+        <Label 
+         Text="{Binding CurrentPhoto.FocalLength}"
+         FontFamily="OpenSans-Regular">
+          <Label.FormattedText>
+            <FormattedString>
+              <Span TextColor="White" FontSize="18" Text="{Binding CurrentPhoto.FocalLength}"/>
+              <Span TextColor="White" FontSize="18" Text="mm"/>
+            </FormattedString>
+          </Label.FormattedText>
+        </Label>
+      </HorizontalStackLayout>
+      <HorizontalStackLayout IsVisible="{Binding CurrentPhoto.DisplayShutterSpeed}">
+        
+        <Image Source="hourglass.png" HeightRequest="20" Margin="0,0,10,0"/>
+        <Label 
+         Text="{Binding CurrentPhoto.FocalLength}"
+         FontFamily="OpenSans-Regular">
+          <Label.FormattedText>
+            <FormattedString>
+              <Span TextColor="White" FontSize="18" Text="{Binding CurrentPhoto.ShutterSpeed}"/>
+              <Span TextColor="White" FontSize="18" Text="s"/>
+            </FormattedString>
+          </Label.FormattedText>
+        </Label>
+      </HorizontalStackLayout>
+    </VerticalStackLayout>
+
+
   </Grid>
 </ContentPage>

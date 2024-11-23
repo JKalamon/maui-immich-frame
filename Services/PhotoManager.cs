@@ -39,9 +39,6 @@ namespace SimpleImmichFrame.Services
 				imagesMetadata.RemoveAt(0);
 			}
 
-			if (currentImage != null)
-				currentImage.Dispose();
-
 			currentImage = nextCachedPhotos.First();
 			nextCachedPhotos.RemoveAt(0);
 			return currentImage;
