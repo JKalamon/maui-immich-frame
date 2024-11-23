@@ -1,49 +1,54 @@
-﻿using System.Data;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace SimpleImmichFrame.ImmichApi
 {
-	internal class ImmichClient
+	public class ImmichClient : IDisposable
 	{
-		public ImmichClient(HttpClient client)
+		private readonly ISettingsService settings;
+		private HttpClient client;
+		private ImmichApi immichApi;
+
+		public ImmichClient(ISettingsService settings)
 		{
+			this.settings = settings;
+			this.SetupHttpClient();
+
+			this.settings.SettingsChanged += SettingsChanged;
 		}
 
-		private Task<bool> LoadRandomAssets()
+		public async Task<IEnumerable<AssetResponseDto>> LoadRandomAssets()
 		{
-			return Task.FromResult(true);
-			//using (var client = new HttpClient())
-			//{
-			//	try
-			//	{
-			//		var searchBody = new RandomSearchDto
-			//		{
-			//			Size = 250,
-			//			Type = AssetTypeEnum.IMAGE,
-			//			WithExif = true,
-			//			WithPeople = true
-			//		};
-			//		var searchResponse = await immichApi.SearchRandomAsync(searchBody);
+			var searchBody = new RandomSearchDto
+			{
+				Size = 250,
+				Type = AssetTypeEnum.IMAGE,
+				WithExif = true,
+				WithPeople = true
+			};
 
-			//		var randomAssets = searchResponse;
+			return await this.immichApi.SearchRandomAsync(searchBody);
+		}
 
-			//		if (randomAssets.Any())
-			//		{
-			//			var excludedList = await ExcludedAlbumAssets;
+		public async Task<FileResponse> GetImage(Guid id) => await immichApi.ViewAssetAsync(id, string.Empty, AssetMediaSize.Preview);
 
-			//			randomAssets = randomAssets.Where(x => !excludedList.Contains(Guid.Parse(x.Id))).ToList();
+		public void Dispose()
+		{
+			this.settings.SettingsChanged -= SettingsChanged;
+			this.client.Dispose();
+		}
+		private void SettingsChanged(object? sender, AppConfiguration args)
+		{
+			this.client?.Dispose();
+			this.SetupHttpClient();
+		}
 
-			//			RandomAssetList.AddRange(randomAssets);
-
-			//			return true;
-			//		}
-			//	}
-			//	catch (ApiException ex)
-			//	{
-			//		throw new PersonNotFoundException($"Asset was not found, check your settings file!{Environment.NewLine}{Environment.NewLine}{ex.Message}", ex);
-			//	}
-
-			//	return false;
-			//}
+		[MemberNotNull(nameof(client))]
+		[MemberNotNull(nameof(immichApi))]
+		private void SetupHttpClient()
+		{
+			this.client = new HttpClient();
+			client.DefaultRequestHeaders.Add("X-API-KEY", this.settings.Settings.ApiKey);
+			this.immichApi = new ImmichApi(this.settings.Settings.ImmichServerUrl, this.client);
 		}
 	}
 }

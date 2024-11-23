@@ -1,26 +1,26 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SimpleImmichFrame.Models;
 using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Windows.Input;
 
 namespace SimpleImmichFrame.PageModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
 	private readonly ISettingsService settingsService;
+	private readonly IServiceProvider provider;
+	private readonly INavigation navigation;
 	private Dictionary<string, object> ssettingValues = new();
+	private AppConfiguration settings = new();
 
 	[ObservableProperty]
 	private List<SettingsGroup> settingsGroups = new();
 
-	public ICommand SaveSettingsCommand { get; }
-
-	public SettingsViewModel(ISettingsService settingsService)
+	public SettingsViewModel(ISettingsService settingsService, IServiceProvider provider, INavigation navigation)
 	{
 		this.settingsService = settingsService;
-		SaveSettingsCommand = new RelayCommand(SaveSettingsAsync);
+		this.provider = provider;
+		this.navigation = navigation;
 	}
 
 	[RelayCommand]
@@ -30,11 +30,26 @@ public partial class SettingsViewModel : ObservableObject
 		return Task.CompletedTask;
 	}
 
+	[RelayCommand]
+	private async Task SaveSettings()
+	{
+		SaveSettingsAsync();
+		await this.navigation.PushAsync(provider.GetRequiredService<PhotoPage>());
+		this.navigation.RemovePage(this.navigation.NavigationStack.First());
+	}
+
+	[RelayCommand]
+	private async Task Cancel()
+	{
+		await this.navigation.PushAsync(provider.GetRequiredService<PhotoPage>());
+		this.navigation.RemovePage(this.navigation.NavigationStack.First());
+	}
+
 	private void LoadSettings()
 	{
 		List<SettingsGroup> list = [];
 
-		var config = settingsService.Settings;
+		this.settings = settingsService.Settings;
 		var properties = typeof(AppConfiguration).GetProperties()
 				.Where(p => p.GetCustomAttribute<SettingAttribute>() != null)
 				.GroupBy(p => p.GetCustomAttribute<SettingAttribute>().Category);
@@ -46,7 +61,7 @@ public partial class SettingsViewModel : ObservableObject
 			foreach (var prop in group)
 			{
 				var attribute = prop.GetCustomAttribute<SettingAttribute>();
-				var value = prop.GetValue(config);
+				var value = prop.GetValue(this.settings);
 				ssettingValues[prop.Name] = value;
 
 				settingsGroup.Settings.Add(new SettingItem
@@ -62,8 +77,7 @@ public partial class SettingsViewModel : ObservableObject
 					ValueChanged = (newValue) =>
 					{
 						ssettingValues[prop.Name] = newValue;
-						prop.SetValue(config, Convert.ChangeType(newValue, prop.PropertyType));
-						SaveSettingsAsync();
+						prop.SetValue(this.settings, Convert.ChangeType(newValue, prop.PropertyType));						
 					}
 				});
 			}
@@ -76,7 +90,7 @@ public partial class SettingsViewModel : ObservableObject
 
 	private void SaveSettingsAsync()
 	{
-		settingsService.SaveSettingsAsync();
+		settingsService.SaveSettingsAsync(this.settings);
 	}
 }
 

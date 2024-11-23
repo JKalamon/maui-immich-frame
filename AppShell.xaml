@@ -27,6 +27,12 @@
     Route="settings" />
 
   <ShellContent
+    Title="Photos"
+    Icon="{StaticResource IconProjects}"
+    ContentTemplate="{DataTemplate pages:PhotoPage}"
+    Route="photo" />
+
+  <ShellContent
         Title="Manage Meta"
         Icon="{StaticResource IconMeta}"
         ContentTemplate="{DataTemplate pages:ManageMetaPage}"

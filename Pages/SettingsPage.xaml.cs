@@ -2,9 +2,9 @@ namespace SimpleImmichFrame.Pages;
 
 public partial class SettingsPage : ContentPage
 {
-	public SettingsPage(SettingsViewModel viewModel)
+	public SettingsPage(IServiceProvider provider)
 	{
 		InitializeComponent();
-		BindingContext = viewModel;
+		BindingContext = new SettingsViewModel(provider.GetRequiredService<ISettingsService>(), provider, Navigation);
 	}
 }

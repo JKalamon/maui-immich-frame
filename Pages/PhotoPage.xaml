@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SimpleImmichFrame.Pages.PhotoPage"
+             xmlns:pageModels="clr-namespace:SimpleImmichFrame.PageModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:behaviors="clr-namespace:SimpleImmichFrame.Behaviors"
+             x:DataType="pageModels:PhotoPageModel"
+             NavigationPage.HasNavigationBar="false"
+             Title="PhotoPage">
+
+  <ContentPage.Behaviors>
+    <toolkit:EventToCommandBehavior
+                EventName="Appearing"                
+                Command="{Binding AppearingCommand}" />
+  </ContentPage.Behaviors>
+
+  <Grid VerticalOptions="Fill">
+    <Grid.GestureRecognizers>
+      <TapGestureRecognizer 
+            NumberOfTapsRequired="3"
+            Command="{Binding GoToSettingsCommand}"/>
+    </Grid.GestureRecognizers>
+    <!-- Background blurred image -->
+    <Image Source="{Binding CurrentPhoto.ImageSource}"
+               Aspect="AspectFill"
+           
+               Opacity="0.8">
+      <Image.Behaviors>
+        <behaviors:BlurBehavior BlurAmount="20"/>
+      </Image.Behaviors>
+    </Image>
+    <Image Source="{Binding CurrentPhoto.ImageSource}" VerticalOptions="FillAndExpand" HorizontalOptions="Center" Aspect="AspectFit" >
+      <Image.GestureRecognizers>
+        <TapGestureRecognizer Command="{Binding NextPhotoCommand}"/>
+        <SwipeGestureRecognizer Direction="Up" Command="{Binding GoToSettingsCommand}"/>
+      </Image.GestureRecognizers>
+    </Image>
+
+
+    <Label 
+               Text="{Binding CurrentTime}"
+               HorizontalOptions="Start"
+               VerticalOptions="End"
+               FontFamily="OpenSans-Semibold"
+               Margin="100,0,0,125"
+               TextColor="White"
+               FontSize="55"/>
+    
+    <Label 
+               Text="{Binding CurrentPhoto.CreatedDate}"
+               HorizontalOptions="Start"
+               VerticalOptions="End"
+               FontFamily="OpenSans-Regular"
+               Margin="100,0,0,100"
+               TextColor="White"
+               FontSize="25"/>
+    
+  </Grid>
+</ContentPage>

@@ -6,6 +6,7 @@
              xmlns:models="clr-namespace:SimpleImmichFrame.Models"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="SimpleImmichFrame.Pages.SettingsPage"
+             NavigationPage.HasNavigationBar="false"
              x:DataType="pageModels:SettingsViewModel"
              Title="Settings">
 
@@ -18,27 +19,32 @@
 
   <ScrollView>
     <VerticalStackLayout 
+        Margin="{StaticResource LayoutPadding}"
+        Spacing="{StaticResource LayoutSpacing}">
+      <VerticalStackLayout 
             BindableLayout.ItemsSource="{Binding SettingsGroups}" 
             Margin="{StaticResource LayoutPadding}"
             Spacing="{StaticResource LayoutSpacing}">
-      <BindableLayout.ItemTemplate>
-        <DataTemplate x:DataType="pageModels:SettingsGroup">
-          <VerticalStackLayout Spacing="10">
-            <Label 
+        <BindableLayout.ItemTemplate>
+          <DataTemplate x:DataType="pageModels:SettingsGroup">
+            <VerticalStackLayout Spacing="10">
+              <Label 
                                 Text="{Binding Name}"
                                 FontSize="Large"
                                 FontAttributes="Bold"
                                 Margin="0,10,0,0"/>
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Settings}" Spacing="10">
-              <BindableLayout.ItemTemplate>
-                <DataTemplate x:DataType="pageModels:SettingItem">
-                  <controls:DynamicSettingControl Setting="{Binding}"/>
-                </DataTemplate>
-              </BindableLayout.ItemTemplate>
+              <VerticalStackLayout BindableLayout.ItemsSource="{Binding Settings}" Spacing="10">
+                <BindableLayout.ItemTemplate>
+                  <DataTemplate x:DataType="pageModels:SettingItem">
+                    <controls:DynamicSettingControl Setting="{Binding}"/>
+                  </DataTemplate>
+                </BindableLayout.ItemTemplate>
+              </VerticalStackLayout>
             </VerticalStackLayout>
-          </VerticalStackLayout>
-        </DataTemplate>
-      </BindableLayout.ItemTemplate>
+          </DataTemplate>
+        </BindableLayout.ItemTemplate>
+      </VerticalStackLayout>
+      <Button Text="Save" Command="{Binding SaveSettingsCommand}" />
     </VerticalStackLayout>
   </ScrollView>
 

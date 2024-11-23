@@ -5,19 +5,25 @@ namespace SimpleImmichFrame.Services;
 public interface ISettingsService
 {
 	void LoadSettingsAsync();
-	void SaveSettingsAsync();
+	void SaveSettingsAsync(AppConfiguration settings);
 	AppConfiguration Settings { get; }
+
+	event EventHandler<AppConfiguration>? SettingsChanged;
 }
 
 public class SettingsService : ISettingsService
 {
 	private const string SETTINGS_KEY = "app_settings";
 
-	public AppConfiguration Settings { get; private set; }
+	public event EventHandler<AppConfiguration>? SettingsChanged;
+
+	public AppConfiguration Settings => this.settings with { };
+
+	private AppConfiguration settings;
 
 	public SettingsService()
 	{
-		Settings = new AppConfiguration();
+		settings = new AppConfiguration();
 	}
 
 	public void LoadSettingsAsync()
@@ -27,18 +33,22 @@ public class SettingsService : ISettingsService
 		{
 			try
 			{
-				Settings = JsonSerializer.Deserialize<AppConfiguration>(settingsJson) ?? new AppConfiguration();
+				settings = JsonSerializer.Deserialize<AppConfiguration>(settingsJson) ?? new AppConfiguration();
 			}
 			catch
 			{
-				Settings = new AppConfiguration();
+				settings = new AppConfiguration();
 			}
 		}
 	}
 
-	public void SaveSettingsAsync()
+	public void SaveSettingsAsync(AppConfiguration settings)
 	{
-		var settingsJson = JsonSerializer.Serialize(Settings);
+		this.settings = settings;
+		var settingsJson = JsonSerializer.Serialize(settings);
 		Preferences.Set(SETTINGS_KEY, settingsJson);
+		SettingsChanged?.Invoke(this, Settings);
 	}
+
+
 }

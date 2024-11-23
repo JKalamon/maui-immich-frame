@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.LifecycleEvents;
+using SimpleImmichFrame.ImmichApi;
 using Syncfusion.Maui.Toolkit.Hosting;
 
 namespace SimpleImmichFrame;
@@ -40,39 +42,14 @@ public static class MauiProgram
 		builder.Services.AddSingleton<SettingsViewModel>();
 		builder.Services.AddSingleton<ISettingsService, SettingsService>();
 		builder.Services.AddSingleton<ManageMetaPageModel>();
-
+		builder.Services.AddSingleton<ImmichClient>();
+		builder.Services.AddSingleton<PhotoManager>();
+		builder.Services.AddTransient<PhotoPage>();
+		builder.Services.AddTransient<SettingsPage>();
 		builder.Services.AddTransientWithShellRoute<ProjectDetailPage, ProjectDetailPageModel>("project");
 		builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
-		//builder.Services.AddSingletonWithShellRoute<SettingsPage, SettingsViewModel>("settings");
-		ModifyUiTextField();
+
 		return builder.Build();
-	}
-
-
-	internal static void ModifyUiTextField()
-	{
-		Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
-		{
-#if __ANDROID__
-			handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
-			//handler.PlatformView.setb = UITextBorderStyle.None;
-
-			//handler.PlatformView.Layer.BorderColor = UIColor.SystemGray3.CGColor;
-			//handler.PlatformView.Layer.BorderWidth = 2.0f;
-			//handler.PlatformView.Layer.MasksToBounds = true;
-			//handler.PlatformView.Layer.CornerRadius = 8.0f;
-
-			//handler.PlatformView.EditingDidBegin += (sender, args) =>
-			//{
-			//	handler.PlatformView.Layer.BorderColor = ((Color)App.Current.Resources["Primary"]).ToCGColor();
-			//};
-
-			//handler.PlatformView.EditingDidEnd += (sender, args) =>
-			//{
-			//	handler.PlatformView.Layer.BorderColor = UIColor.SystemGray3.CGColor;
-			//};
-#endif
-		});
 	}
 
 }
