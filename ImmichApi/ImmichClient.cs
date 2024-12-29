@@ -31,6 +31,10 @@ namespace SimpleImmichFrame.ImmichApi
 
 		public async Task<FileResponse> GetImage(Guid id) => await immichApi.ViewAssetAsync(id, string.Empty, AssetMediaSize.Preview);
 
+		public async Task<FileResponse> GetImageThumbnail(Guid id) => await immichApi.ViewAssetAsync(id, string.Empty, AssetMediaSize.Thumbnail);
+
+		public async Task DeleteImage(Guid id) => await immichApi.DeleteAssetsAsync(new() { Ids = [id] });
+
 		public void Dispose()
 		{
 			this.settings.SettingsChanged -= SettingsChanged;

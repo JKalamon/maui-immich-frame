@@ -1,8 +1,10 @@
 ﻿namespace SimpleImmichFrame.Models;
 
-public record DisplayPhoto(byte[] PhotoData, string CreatedDate, double? Iso, double? Aperture, string? ShutterSpeed, double? FocalLength)
+public record DisplayPhoto(string Id, byte[] PhotoData, byte[] Thumbnail, string CreatedDate, double? Iso, double? Aperture, string? ShutterSpeed, double? FocalLength)
 {
 	public ImageSource ImageSource => ImageSource.FromStream(() => new MemoryStream(PhotoData));
+
+	public ImageSource ThumbnailImageSource => ImageSource.FromStream(() => new MemoryStream(Thumbnail));
 
 	public bool DisplayAperture => this.Aperture > 0.5;
 

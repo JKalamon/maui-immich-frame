@@ -20,6 +20,9 @@ public partial class PhotoPageModel : ObservableObject
 	[ObservableProperty]
 	private string? exceptionText = null;
 
+	[ObservableProperty]
+	private bool showDeleteButton = false;
+
 	private IDispatcherTimer currentTimeTimer;
 
 	private IDispatcherTimer photoChangeTimer;
@@ -52,24 +55,38 @@ public partial class PhotoPageModel : ObservableObject
 	[RelayCommand]
 	public async Task NextPhoto() => await GetNextPhotoInternal();
 
+	[RelayCommand]
+	public async Task GoToSettings()
+	{
+		await this.navigation.PushAsync(provider.GetRequiredService<SettingsPage>());
+		this.navigation.RemovePage(this.navigation.NavigationStack.First());
+	}
+
+	[RelayCommand]
+	public async Task DeleteImage()
+	{
+		await this.manager.DeleteCurrentPhoto();
+		await this.GetNextPhotoInternal();
+	}
+
+	[RelayCommand]
+	public void ToggleDeleteButton()
+	{
+		this.ShowDeleteButton = !this.ShowDeleteButton;
+	}
+
 	private async Task GetNextPhotoInternal()
 	{
 		try
 		{
 			this.CurrentPhoto = await this.manager.GetNextPhoto();
+			this.ShowDeleteButton = false;
 			this.ExceptionText = null;
 		}
 		catch (Exception ex)
 		{
 			this.ExceptionText = ex.Message;
 		}
-	}
-
-	[RelayCommand]
-	public async Task GoToSettings()
-	{
-		await this.navigation.PushAsync(provider.GetRequiredService<SettingsPage>());
-		this.navigation.RemovePage(this.navigation.NavigationStack.First());
 	}
 
 	private void CurrentTimeTick(object? sender, EventArgs e)

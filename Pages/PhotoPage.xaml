@@ -30,19 +30,21 @@
       <Label 
            Text="There was an error while downloading photos"
            HorizontalTextAlignment="Center"
-           FontFamily="OpenSans-Regular"
+           FontFamily="OpenSansRegular"
            TextColor="White"
            FontSize="25"/>
       <Label 
        Text="{Binding ExceptionText}"
-       FontFamily="OpenSans-Regular"
+       FontFamily="OpenSansRegular"
        TextColor="White"
        FontSize="20"/>
 
       <Button Text="Open settings" HeightRequest="50" Command="{Binding GoToSettingsCommand}" />
     </VerticalStackLayout>
 
-    <Image Source="{Binding CurrentPhoto.ImageSource}" IsVisible="{Binding ExceptionText, Converter={StaticResource IsNullConverter}}"
+    
+    
+    <Image Source="{Binding CurrentPhoto.ThumbnailImageSource}" IsVisible="{Binding ExceptionText, Converter={StaticResource IsNullConverter}}"
                Aspect="AspectFill"
                Opacity="0.8">
       <Image.Behaviors>
@@ -54,10 +56,12 @@
         </toolkit:AnimationBehavior>
       </Image.Behaviors>
     </Image>
-    <Image Source="{Binding CurrentPhoto.ImageSource}" VerticalOptions="FillAndExpand" HorizontalOptions="Center" Aspect="AspectFit" IsVisible="{Binding ExceptionText, Converter={StaticResource IsNullConverter}}">
+
+    <Image Source="{Binding CurrentPhoto.ImageSource}" VerticalOptions="FillAndExpand" HorizontalOptions="Center" Aspect="AspectFit" IsVisible="{Binding ExceptionText, Converter={StaticResource IsNullConverter}}" Opacity="1">
       <Image.GestureRecognizers>
         <TapGestureRecognizer Command="{Binding NextPhotoCommand}"/>
         <SwipeGestureRecognizer Direction="Up" Command="{Binding GoToSettingsCommand}"/>
+        <SwipeGestureRecognizer Direction="Down" Command="{Binding ToggleDeleteButtonCommand}"/>
       </Image.GestureRecognizers>
       <Image.Behaviors>
         <toolkit:AnimationBehavior>
@@ -70,11 +74,13 @@
     </Image>
 
 
+    <Button Text="Delete photo" IsVisible="{Binding ShowDeleteButton}" VerticalOptions="Start" BackgroundColor="Red" Margin="0,50,0,0" HeightRequest="50" Command="{Binding DeleteImageCommand}" />
+
     <Label 
                Text="{Binding CurrentTime}"
                HorizontalOptions="Start"
                VerticalOptions="End"
-               FontFamily="OpenSans-Semibold"
+               FontFamily="OpenSansSemibold"
                Margin="100,0,0,125"
                TextColor="White"
                FontSize="55"/>
@@ -83,7 +89,7 @@
                Text="{Binding CurrentPhoto.CreatedDate}"
                HorizontalOptions="Start"
                VerticalOptions="End"
-               FontFamily="OpenSans-Regular"
+               FontFamily="OpenSansRegular"
                Margin="100,0,0,100"
                TextColor="White"
                FontSize="25"/>
@@ -91,7 +97,7 @@
     <VerticalStackLayout HorizontalOptions="End" VerticalOptions="End" Margin="0,0,100,100" IsVisible="{Binding CurrentPhoto, Converter={StaticResource IsNotNullConverter}}">
       <HorizontalStackLayout IsVisible="{Binding CurrentPhoto.DisplayAperture}">
         <Image Source="aperture.png" HeightRequest="20" Margin="0,0,10,0"/>
-        <Label FontFamily="OpenSans-Regular">
+        <Label FontFamily="OpenSansRegular">
           <Label.FormattedText>
             <FormattedString>
               <Span TextColor="White" FontSize="18" Text="f/"/>
@@ -105,7 +111,7 @@
         <Image Source="iso.png" HeightRequest="20" Margin="0,0,10,0"/>
         <Label 
          Text="{Binding CurrentPhoto.Iso}"
-         FontFamily="OpenSans-Regular"
+         FontFamily="OpenSansRegular"
          TextColor="White"
          FontSize="18"/>
       </HorizontalStackLayout>
@@ -114,7 +120,7 @@
         <Image Source="eye.png" HeightRequest="20" Margin="0,0,10,0"/>
         <Label 
          Text="{Binding CurrentPhoto.FocalLength}"
-         FontFamily="OpenSans-Regular">
+         FontFamily="OpenSansRegular">
           <Label.FormattedText>
             <FormattedString>
               <Span TextColor="White" FontSize="18" Text="{Binding CurrentPhoto.FocalLength}"/>
@@ -128,7 +134,7 @@
         <Image Source="hourglass.png" HeightRequest="20" Margin="0,0,10,0"/>
         <Label 
          Text="{Binding CurrentPhoto.FocalLength}"
-         FontFamily="OpenSans-Regular">
+         FontFamily="OpenSansRegular">
           <Label.FormattedText>
             <FormattedString>
               <Span TextColor="White" FontSize="18" Text="{Binding CurrentPhoto.ShutterSpeed}"/>

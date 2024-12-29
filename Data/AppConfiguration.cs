@@ -31,7 +31,7 @@ public record AppConfiguration
 	public string Culture { get; set; } = "pl";
 
 	[Setting("Image duration", "Image display duration in seconds", "Photos", SettingControlType.NumericEntry, Minimum = 1)]
-	public double ImageDuration { get; set; } = 15;
+	public double ImageDuration { get; set; } = 180;
 
 	[Setting("Image transition duration", "Image animation transition duration in seconds", "Photos", SettingControlType.NumericEntry, Minimum = 1)]
 	public double ImageTransitionDuration { get; set; } = 2;

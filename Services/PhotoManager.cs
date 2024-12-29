@@ -14,6 +14,14 @@ namespace SimpleImmichFrame.Services
 
 		private DisplayPhoto? currentImage = null;
 
+		public async Task DeleteCurrentPhoto()
+		{
+			if (this.currentImage == null)
+				return;
+
+			await client.DeleteImage(Guid.Parse(this.currentImage.Id));
+		}
+
 		public async Task<DisplayPhoto> GetNextPhoto()
 		{
 			if (imagesMetadata?.Any() != true)
@@ -29,13 +37,16 @@ namespace SimpleImmichFrame.Services
 			while (nextCachedPhotos.Count < maxCachedPhotos && imagesMetadata.Any())
 			{
 				var metadata = imagesMetadata.First();
-				using var memoryStream = new MemoryStream();
+				using var imageMs = new MemoryStream();
 				using var imageFile = await client.GetImage(Guid.Parse(metadata.Id));
-				await imageFile.Stream.CopyToAsync(memoryStream);
+				await imageFile.Stream.CopyToAsync(imageMs);
 
+				using var thumbnailMs = new MemoryStream();
+				using var thumbnailFile = await client.GetImageThumbnail(Guid.Parse(metadata.Id));
+				await thumbnailFile.Stream.CopyToAsync(thumbnailMs);
 
 				var date = metadata.FileCreatedAt.UtcDateTime.ToString(settingsService.Settings.DateFormat, culture);
-				nextCachedPhotos.Add(new DisplayPhoto(memoryStream.ToArray(), date, metadata.ExifInfo.Iso, metadata.ExifInfo.FNumber, metadata.ExifInfo.ExposureTime, metadata.ExifInfo.FocalLength));
+				nextCachedPhotos.Add(new DisplayPhoto(metadata.Id, imageMs.ToArray(), thumbnailMs.ToArray(), date, metadata.ExifInfo.Iso, metadata.ExifInfo.FNumber, metadata.ExifInfo.ExposureTime, metadata.ExifInfo.FocalLength));
 				imagesMetadata.RemoveAt(0);
 			}
 
