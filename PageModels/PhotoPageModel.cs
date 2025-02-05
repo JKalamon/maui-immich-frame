@@ -42,11 +42,14 @@ public partial class PhotoPageModel : ObservableObject
 		photoChangeTimer.Tick += NextPhotoTick;
 		photoChangeTimer.Start();
 
+
 		this.navigation = nav;
 
 		this.manager = manager;
 		this.provider = provider;
 		this.settings = settings;
+
+		_ = this.NextPhoto();
 	}
 
 	[RelayCommand]

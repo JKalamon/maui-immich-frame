@@ -1,18 +1,36 @@
-﻿using SimpleImmichFrame.Exceptions;
+﻿using Microsoft.Maui.Layouts;
+using SimpleImmichFrame.Exceptions;
 using SimpleImmichFrame.ImmichApi;
 using SimpleImmichFrame.Models;
 
 namespace SimpleImmichFrame.Services
 {
-	public class PhotoManager(ISettingsService settingsService, ImmichClient client)
+	public class PhotoManager
 	{
 		private readonly int maxCachedPhotos = 2;
+		private readonly ISettingsService settingsService;
+		private readonly ImmichClient client;
 
 		private List<AssetResponseDto>? imagesMetadata;
+
+		private List<string> skipPhotos = [];
 
 		private List<DisplayPhoto> nextCachedPhotos = [];
 
 		private DisplayPhoto? currentImage = null;
+
+		private bool refetchRequired = true;
+
+		public PhotoManager(ISettingsService settingsService, ImmichClient client)
+		{
+			settingsService.SettingsChanged += (x, y) =>
+			{
+				this.refetchRequired = true;
+			};
+
+			this.settingsService = settingsService;
+			this.client = client;
+		}
 
 		public async Task DeleteCurrentPhoto()
 		{
@@ -32,11 +50,34 @@ namespace SimpleImmichFrame.Services
 				throw new SupportedException("No images found");
 			}
 
+			if (this.refetchRequired)
+			{
+				this.skipPhotos = [];
+				var albums = this.settingsService.Settings.IgnoreAlbums.Split(',', StringSplitOptions.RemoveEmptyEntries);
+				for (var i = 0; i < albums.Length; i++)
+				{
+					var albumToParse = albums[i];
+					if (Guid.TryParse(albumToParse, out var guid))
+					{
+						var album = await this.client.GetAlbumPhotos(guid);
+						this.skipPhotos.AddRange(album.Assets.Select(x => x.Id));
+					}
+				}
+				
+				this.refetchRequired = false;
+			}
+
 			var culture = new System.Globalization.CultureInfo(settingsService.Settings.Culture);
 
 			while (nextCachedPhotos.Count < maxCachedPhotos && imagesMetadata.Any())
 			{
 				var metadata = imagesMetadata.First();
+				if (skipPhotos.Contains(metadata.Id))
+				{
+					imagesMetadata.RemoveAt(0);
+					continue;
+				}
+
 				using var imageMs = new MemoryStream();
 				using var imageFile = await client.GetImage(Guid.Parse(metadata.Id));
 				await imageFile.Stream.CopyToAsync(imageMs);

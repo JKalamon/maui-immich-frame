@@ -21,13 +21,7 @@ public partial class SettingsViewModel : ObservableObject
 		this.settingsService = settingsService;
 		this.provider = provider;
 		this.navigation = navigation;
-	}
-
-	[RelayCommand]
-	private Task Appearing()
-	{
 		LoadSettings();
-		return Task.CompletedTask;
 	}
 
 	[RelayCommand]

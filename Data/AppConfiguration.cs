@@ -4,10 +4,10 @@
 public record AppConfiguration
 {
 	[Setting("Server URL", "The URL of your Immich server e.g. http://photos.myserver.com / http://192.168.0.100:2283", "Server", SettingControlType.Text)]
-	public string ImmichServerUrl { get; set; } = "http://photos.myserver.com";
+	public string ImmichServerUrl { get; set; } = "http://192.168.0.151:2283";
 
 	[Setting("Api Key", """Read more about how to obtain an <a href="https://immich.app/docs/features/command-line-interface#obtain-the-api-key">immich API key</a>.""", "Server", SettingControlType.Text)]
-	public string ApiKey { get; set; } = "HerePutYourSecretAPIKey123456789XYZ";
+	public string ApiKey { get; set; } = "yMo85IdMcljPpQJgjzn9gBePAuHuC81a1SmeEhaCI";
 
 	[Setting("Show Clock", "Toggle clock visibility on/off", "Date & Time", SettingControlType.Toggle)]
 	public bool ShowClock { get; set; } = true;
@@ -36,7 +36,6 @@ public record AppConfiguration
 	[Setting("Image transition duration", "Image animation transition duration in seconds", "Photos", SettingControlType.NumericEntry, Minimum = 1)]
 	public double ImageTransitionDuration { get; set; } = 2;
 
-
 	[Setting("EnableSleep", "At scheduled time turns screen to black in order to save energy", "Sleep time", SettingControlType.Toggle)]
 	public bool EnableSleepTime { get; set; } = true;
 
@@ -45,4 +44,7 @@ public record AppConfiguration
 
 	[Setting("Sleep end hour", "At what time screen should go back to display photos", "Sleep time", SettingControlType.Slider, Minimum = 0, Maximum = 23)]
 	public int SleepEndTime { get; set; } = 6;
+
+	[Setting("Ignored albums", "List of albums ids separated by comma ',' that should not be shown", "Date & Time", SettingControlType.Text)]
+	public string IgnoreAlbums { get; set; } = "4b7d3580-da39-4743-aac9-2cd4466215fb";
 }

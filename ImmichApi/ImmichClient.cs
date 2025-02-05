@@ -33,6 +33,8 @@ namespace SimpleImmichFrame.ImmichApi
 
 		public async Task<FileResponse> GetImageThumbnail(Guid id) => await immichApi.ViewAssetAsync(id, string.Empty, AssetMediaSize.Thumbnail);
 
+		public async Task<AlbumResponseDto> GetAlbumPhotos(Guid id) => await immichApi.GetAlbumInfoAsync(id, string.Empty, false);
+
 		public async Task DeleteImage(Guid id) => await immichApi.DeleteAssetsAsync(new() { Ids = [id] });
 
 		public void Dispose()

@@ -10,16 +10,9 @@
              x:DataType="pageModels:SettingsViewModel"
              Title="Settings">
 
-  <ContentPage.Behaviors>
-    <toolkit:EventToCommandBehavior
-                EventName="Appearing"                
-                Command="{Binding AppearingCommand}" />
-  </ContentPage.Behaviors>
-
-
   <ScrollView>
     <VerticalStackLayout 
-        Margin="{StaticResource LayoutPadding}"
+        Margin="50,20,50,20"
         Spacing="{StaticResource LayoutSpacing}">
       <VerticalStackLayout 
             BindableLayout.ItemsSource="{Binding SettingsGroups}" 
